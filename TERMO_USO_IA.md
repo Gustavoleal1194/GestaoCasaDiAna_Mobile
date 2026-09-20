@@ -15,7 +15,7 @@
 
 ## Escopo deste termo
 
-Este projeto usa como base de padrões de código o projeto de referência apresentado em sala (TaskApp), incluindo sua estrutura de componente (`type Props`, `function` declarada, `StyleSheet.create` ao final do arquivo), nomenclatura em português, organização de pastas (`components/`, `models/`) e estilo de validação. **Esses padrões, por já terem sido ensinados e demonstrados no projeto de referência, não são declarados como conteúdo gerado por IA neste termo.**
+Este projeto usa como base de padrões de código o projeto de referência apresentado em sala (TaskApp), incluindo sua estrutura de componente (`type Props`, `function` declarada, `StyleSheet.create` ao final do arquivo), nomenclatura em português, organização de pastas (`components/`, `models/`) e estilo de validação. **Esses padrões, por já terem sido ensinados e demonstrados no projeto de referência, são tratados como desenvolvimento manual, e não como conteúdo gerado por IA neste termo.**
 
 Este termo declara **apenas os elementos técnicos e funcionais que vão além do que o projeto de referência ensina** — ou seja, funcionalidades, integrações e decisões de arquitetura que não têm equivalente no projeto do professor e foram desenvolvidas com apoio de IA generativa especificamente para este trabalho.
 
