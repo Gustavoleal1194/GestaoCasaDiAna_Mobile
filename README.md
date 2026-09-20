@@ -1,6 +1,6 @@
 # Casa di Ana Mobile
 
-Aplicativo mobile (Expo / React Native) para o sistema de gestão operacional da cafeteria **Casa di Ana**. Trabalho desenvolvido para a disciplina, usando como base de padrões de código o projeto de referência do professor.
+Aplicativo mobile (Expo / React Native) para o sistema de gestão operacional da cafeteria **Casa di Ana**.
 
 ---
 
@@ -45,8 +45,6 @@ O objetivo é oferecer um cliente mobile simples que **consome a API REST já ex
 
 - **CORS ao testar no navegador**: rodar o app em modo web (`expo start --web`) para testes rápidos esbarrava em bloqueio de CORS, já que a API só libera o domínio do frontend web oficial. A solução foi validar as chamadas de API sempre via **Expo Go** em dispositivo real, já que CORS é uma restrição exclusiva de navegador e não existe em runtime nativo.
 - **Cold start do plano gratuito do Render**: a API entra em modo de espera quando fica ociosa, e a primeira requisição após um tempo parado pode retornar `503` por alguns segundos até o serviço acordar. Foi necessário aumentar o tempo limite das requisições no app e tratar esse cenário com uma mensagem amigável.
-- **Divergência sobre a versão correta do Expo SDK**: o repositório de referência tinha um `package.json` na versão 57 mas uma documentação interna (`AGENTS.md`) apontando para a versão 54, gerando confusão sobre qual seguir. A resolução exigiu consultar a documentação oficial versionada do Expo para confirmar exatamente quais campos de configuração (`app.json`) são válidos em cada versão, já que alguns campos (como `newArchEnabled` e `splash` na raiz) mudam de lugar entre versões do SDK.
-- **Duplicação de código entre telas**: as primeiras versões dos módulos (Perdas, Produção, Estoque) repetiam a mesma estrutura de card, campo de formulário, mensagem de erro e estado vazio em cada arquivo. Foi necessário um esforço deliberado de refatoração para extrair componentes reutilizáveis (`Card`, `CampoTexto`, `MensagemErro`, `TelaLista`, entre outros) e manter a manutenção do projeto saudável.
 - **Fidelidade visual sem replicar tudo**: o sistema web tem uma tela de login com uma cena animada elaborada (ilustração 3D com CSS). Reproduzir isso literalmente em React Native estaria fora de escopo para um app mobile simples — a solução foi extrair os tokens de design reais (cores, tipografia) do CSS do frontend web e aplicá-los de forma consistente no app, sem tentar recriar a animação.
 
 ---
