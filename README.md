@@ -57,11 +57,46 @@ O objetivo é oferecer um cliente mobile simples que **consome a API REST já ex
 
 ## 📱 Capturas de tela
 
-<p align="center">
-  <img src="docs/tela-login.jpg" alt="Tela de login do app Casa di Ana Mobile" width="480">
-</p>
+*Dados exibidos são ilustrativos, para fins de demonstração da interface.*
 
-*Tela de login, com suporte a autenticação de dois fatores.*
+<table>
+  <tr>
+    <td align="center">
+      <img src="docs/tela-login.jpg" alt="Tela de login" width="360"><br>
+      <sub>Login (com suporte a 2FA)</sub>
+    </td>
+    <td align="center">
+      <img src="docs/menu-lateral.jpg" alt="Menu lateral" width="360"><br>
+      <sub>Menu lateral</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/tela-perdas.jpg" alt="Tela de registro de perdas" width="360"><br>
+      <sub>Registrar Perda</sub>
+    </td>
+    <td align="center">
+      <img src="docs/tela-producao.jpg" alt="Tela de produção diária" width="360"><br>
+      <sub>Produção Diária</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/tela-estoque.jpg" alt="Tela de correção de estoque" width="360"><br>
+      <sub>Correção de Estoque</sub>
+    </td>
+    <td align="center">
+      <img src="docs/tela-cadastro-produto.jpg" alt="Tela de cadastro de produto" width="360"><br>
+      <sub>Cadastro — Produto</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="docs/tela-cadastro-ingrediente.jpg" alt="Tela de cadastro de ingrediente" width="360"><br>
+      <sub>Cadastro — Ingrediente (Editar/Excluir)</sub>
+    </td>
+  </tr>
+</table>
 
 ---
 
