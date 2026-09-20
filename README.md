@@ -45,7 +45,6 @@ O objetivo é oferecer um cliente mobile simples que **consome a API REST já ex
 
 - **CORS ao testar no navegador**: rodar o app em modo web (`expo start --web`) para testes rápidos esbarrava em bloqueio de CORS, já que a API só libera o domínio do frontend web oficial. A solução foi validar as chamadas de API sempre via **Expo Go** em dispositivo real, já que CORS é uma restrição exclusiva de navegador e não existe em runtime nativo.
 - **Cold start do plano gratuito do Render**: a API entra em modo de espera quando fica ociosa, e a primeira requisição após um tempo parado pode retornar `503` por alguns segundos até o serviço acordar. Foi necessário aumentar o tempo limite das requisições no app e tratar esse cenário com uma mensagem amigável.
-- **Fidelidade visual sem replicar tudo**: o sistema web tem uma tela de login com uma cena animada elaborada (ilustração 3D com CSS). Reproduzir isso literalmente em React Native estaria fora de escopo para um app mobile simples — a solução foi extrair os tokens de design reais (cores, tipografia) do CSS do frontend web e aplicá-los de forma consistente no app, sem tentar recriar a animação.
 
 ---
 
