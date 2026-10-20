@@ -117,9 +117,11 @@ O objetivo é oferecer um cliente mobile simples que **consome a API REST já ex
 
 ```bash
 npm install
-npx expo start
+npm start
 ```
 
-Escaneie o QR code exibido no terminal com o app **Expo Go** (Android/iOS), estando o celular na mesma rede Wi-Fi do computador.
+O script `start` executa `expo start --offline`, que dispensa login no Expo CLI — o modo offline apenas evita a comunicação do CLI com os servidores da Expo; o app continua acessando a API normalmente.
+
+Escaneie o QR code exibido no terminal com o app **Expo Go** (Android/iOS), estando o celular na mesma rede Wi-Fi do computador. Se preferir, no Expo Go use **"Enter URL manually"** e informe `exp://<IP-do-computador>:8081`.
 
 O app já aponta para a API em produção (`https://casadiana-api.onrender.com/api`) — não é necessário rodar o backend localmente para testar.
