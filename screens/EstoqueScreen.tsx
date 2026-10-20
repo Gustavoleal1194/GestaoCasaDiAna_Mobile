@@ -27,14 +27,22 @@ export default function EstoqueScreen() {
     const[carregando, setCarregando] = useState(false);
     const[erro, setErro] = useState('');
 
+    const[carregandoLista, setCarregandoLista] = useState(true);
+    const[erroLista, setErroLista] = useState('');
+
     const carregarIngredientes = useCallback(async () => {
         if (!usuario) return;
+
+        setCarregandoLista(true);
+        setErroLista('');
 
         try {
             const lista = await listarIngredientes(usuario.token);
             setIngredientes(lista);
         } catch (e) {
-            setErro(e instanceof Error ? e.message : 'Erro ao carregar ingredientes.');
+            setErroLista(e instanceof Error ? e.message : 'Erro ao carregar ingredientes.');
+        } finally {
+            setCarregandoLista(false);
         }
     }, [usuario]);
 
@@ -91,6 +99,9 @@ export default function EstoqueScreen() {
             dados={ingredientes}
             chaveExtrator={(item) => item.id}
             mensagemVazia='Nenhum ingrediente cadastrado'
+            carregando={carregandoLista}
+            erro={erroLista}
+            aoRecarregar={carregarIngredientes}
             cabecalho={
                 <>
                     <TituloSecao>Correção de Estoque</TituloSecao>

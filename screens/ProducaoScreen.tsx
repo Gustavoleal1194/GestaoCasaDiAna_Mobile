@@ -32,8 +32,14 @@ export default function ProducaoScreen() {
     const[carregando, setCarregando] = useState(false);
     const[erro, setErro] = useState('');
 
+    const[carregandoLista, setCarregandoLista] = useState(true);
+    const[erroLista, setErroLista] = useState('');
+
     const carregarDados = useCallback(async () => {
         if (!usuario) return;
+
+        setCarregandoLista(true);
+        setErroLista('');
 
         try {
             const [listaProdutos, listaProducoes] = await Promise.all([
@@ -43,7 +49,9 @@ export default function ProducaoScreen() {
             setProdutos(listaProdutos);
             setProducoes(listaProducoes);
         } catch (e) {
-            setErro(e instanceof Error ? e.message : 'Erro ao carregar dados.');
+            setErroLista(e instanceof Error ? e.message : 'Erro ao carregar dados.');
+        } finally {
+            setCarregandoLista(false);
         }
     }, [usuario]);
 
@@ -90,6 +98,9 @@ export default function ProducaoScreen() {
             dados={producoes}
             chaveExtrator={(item) => item.id}
             mensagemVazia='Nenhuma produção registrada'
+            carregando={carregandoLista}
+            erro={erroLista}
+            aoRecarregar={carregarDados}
             cabecalho={
                 <>
                     <TituloSecao>Registrar Produção Diária</TituloSecao>

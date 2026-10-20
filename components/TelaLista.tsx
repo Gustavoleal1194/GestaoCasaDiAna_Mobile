@@ -1,5 +1,7 @@
-import { FlatList, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Platform, RefreshControl, StyleSheet } from 'react-native';
 import { cores } from '../theme/cores';
+import Carregando from './Carregando';
+import ErroCarregamento from './ErroCarregamento';
 import ListaVazia from './ListaVazia';
 
 type TelaListaProps<T> = {
@@ -7,7 +9,10 @@ type TelaListaProps<T> = {
     chaveExtrator: (item: T) => string,
     cabecalho: React.ReactElement,
     renderItem: (item: T) => React.ReactElement,
-    mensagemVazia: string
+    mensagemVazia: string,
+    carregando?: boolean,
+    erro?: string,
+    aoRecarregar?: () => void
 }
 
 export default function TelaLista<T>({
@@ -15,8 +20,25 @@ export default function TelaLista<T>({
     chaveExtrator,
     cabecalho,
     renderItem,
-    mensagemVazia
+    mensagemVazia,
+    carregando = false,
+    erro = '',
+    aoRecarregar
 }: TelaListaProps<T>) {
+
+    const temDados = dados.length > 0;
+
+    function estadoListaVazia() {
+        if (carregando) {
+            return <Carregando />;
+        }
+
+        if (erro !== '') {
+            return <ErroCarregamento mensagem={erro} aoTentarNovamente={aoRecarregar} />;
+        }
+
+        return <ListaVazia mensagem={mensagemVazia} />;
+    }
 
     return (
         <KeyboardAvoidingView
@@ -28,9 +50,28 @@ export default function TelaLista<T>({
                 keyExtractor={chaveExtrator}
                 keyboardShouldPersistTaps='handled'
                 contentContainerStyle={styles.conteudo}
-                ListHeaderComponent={cabecalho}
+                ListHeaderComponent={
+                    <>
+                        { cabecalho }
+                        {
+                            temDados && erro !== '' && (
+                                <ErroCarregamento mensagem={erro} aoTentarNovamente={aoRecarregar} />
+                            )
+                        }
+                    </>
+                }
                 renderItem={({ item }) => renderItem(item)}
-                ListEmptyComponent={<ListaVazia mensagem={mensagemVazia} />}
+                ListEmptyComponent={estadoListaVazia()}
+                refreshControl={
+                    aoRecarregar && (
+                        <RefreshControl
+                            refreshing={carregando && temDados}
+                            onRefresh={aoRecarregar}
+                            tintColor={cores.destaque}
+                            colors={[cores.destaque]}
+                        />
+                    )
+                }
             />
         </KeyboardAvoidingView>
     );

@@ -38,11 +38,29 @@ export async function chamarApi<T>(
         return undefined as T;
     }
 
-    const json: ApiResponse<T> = await resposta.json();
+    let json: ApiResponse<T> | null = null;
 
-    if (!resposta.ok || !json.sucesso) {
-        throw new Error(json.erros?.join('\n') || 'Erro ao comunicar com a API.');
+    try {
+        json = await resposta.json();
+    } catch {
+        json = null;
+    }
+
+    if (!resposta.ok || !json?.sucesso) {
+        throw new Error(json?.erros?.join('\n') || mensagemPorStatus(resposta.status));
     }
 
     return json.dados as T;
+}
+
+function mensagemPorStatus(status: number): string {
+    if (status === 401) return 'Sessão expirada ou credenciais inválidas. Faça login novamente.';
+    if (status === 403) return 'Você não tem permissão para realizar esta ação.';
+    if (status === 404) return 'Recurso não encontrado na API.';
+    if (status === 502 || status === 503 || status === 504) {
+        return 'Servidor indisponível no momento. Ele pode estar iniciando, tente novamente em instantes.';
+    }
+    if (status >= 500) return `Erro interno do servidor (${status}). Tente novamente mais tarde.`;
+    if (status >= 400) return `Requisição inválida (${status}).`;
+    return 'Resposta inválida recebida da API.';
 }

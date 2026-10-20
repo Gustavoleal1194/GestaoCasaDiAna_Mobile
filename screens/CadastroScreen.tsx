@@ -70,8 +70,14 @@ export default function CadastroScreen() {
     const[carregando, setCarregando] = useState(false);
     const[erro, setErro] = useState('');
 
+    const[carregandoLista, setCarregandoLista] = useState(true);
+    const[erroLista, setErroLista] = useState('');
+
     const carregarDados = useCallback(async () => {
         if (!usuario) return;
+
+        setCarregandoLista(true);
+        setErroLista('');
 
         try {
             const [listaProdutos, listaIngredientes, catsProduto, catsIngrediente, unidades] = await Promise.all([
@@ -87,7 +93,9 @@ export default function CadastroScreen() {
             setCategoriasIngrediente(catsIngrediente);
             setUnidadesMedida(unidades);
         } catch (e) {
-            setErro(e instanceof Error ? e.message : 'Erro ao carregar dados.');
+            setErroLista(e instanceof Error ? e.message : 'Erro ao carregar dados.');
+        } finally {
+            setCarregandoLista(false);
         }
     }, [usuario]);
 
@@ -389,6 +397,9 @@ export default function CadastroScreen() {
             dados={modo === 'produto' ? produtos : ingredientes}
             chaveExtrator={(item) => item.id}
             mensagemVazia='Nada cadastrado ainda'
+            carregando={carregandoLista}
+            erro={erroLista}
+            aoRecarregar={carregarDados}
             cabecalho={
                 <>
                     <TituloSecao>Cadastro</TituloSecao>
