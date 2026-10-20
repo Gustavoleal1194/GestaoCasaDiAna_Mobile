@@ -120,7 +120,14 @@ npm install
 npm start
 ```
 
-O script `start` executa `expo start --offline`, que dispensa login no Expo CLI — o modo offline apenas evita a comunicação do CLI com os servidores da Expo; o app continua acessando a API normalmente.
+No **iPhone físico**, o Expo Go (SDK 57) exige que o app e o Expo CLI estejam logados na **mesma conta Expo**. Antes de iniciar, faça login no CLI com a mesma conta usada no Expo Go:
+
+```bash
+npx expo login
+npx expo whoami   # confere a conta logada
+```
+
+No Android (dispositivo ou emulador) esse login não é necessário.
 
 Escaneie o QR code exibido no terminal com o app **Expo Go** (Android/iOS), estando o celular na mesma rede Wi-Fi do computador. Se preferir, no Expo Go use **"Enter URL manually"** e informe `exp://<IP-do-computador>:8081`.
 
