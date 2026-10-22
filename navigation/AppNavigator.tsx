@@ -7,12 +7,12 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import CadastroScreen from '../screens/CadastroScreen';
 import EstoqueScreen from '../screens/EstoqueScreen';
 import PerdasScreen from '../screens/PerdasScreen';
 import ProducaoScreen from '../screens/ProducaoScreen';
 import { cores } from '../theme/cores';
 import { fontes } from '../theme/fontes';
+import CadastroNavigator from './CadastroNavigator';
 
 const Drawer = createDrawerNavigator();
 
@@ -74,8 +74,8 @@ export default function AppNavigator() {
                 />
                 <Drawer.Screen
                     name='Cadastro'
-                    component={CadastroScreen}
-                    options={{ title: 'Cadastro' }}
+                    component={CadastroNavigator}
+                    options={{ title: 'Cadastro', headerShown: false }}
                 />
             </Drawer.Navigator>
         </NavigationContainer>
