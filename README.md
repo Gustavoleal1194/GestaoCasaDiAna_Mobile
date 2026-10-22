@@ -370,7 +370,7 @@ O app consome por padrão a **API já publicada** em `https://casadiana-api.onre
 
 ### 1. Aplicação mobile
 
-Pré-requisitos: Node.js 22.13+ e o app **Expo Go** (SDK 57) no celular.
+Pré-requisitos: Node.js 22.18+ (os testes usam o suporte nativo do Node a TypeScript) e o app **Expo Go** (SDK 57) no celular.
 
 ```bash
 npm install

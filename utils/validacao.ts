@@ -1,12 +1,11 @@
 export function converterNumero(texto: string): number | null {
     const limpo = texto.trim().replace(',', '.');
 
-    if (limpo === '') {
+    if (!/^-?\d+(\.\d+)?$/.test(limpo)) {
         return null;
     }
 
-    const numero = Number(limpo);
-    return Number.isNaN(numero) ? null : numero;
+    return Number(limpo);
 }
 
 export function dataValida(texto: string): boolean {

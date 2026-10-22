@@ -9,7 +9,7 @@ test('converterNumero aceita ponto e vírgula', () => {
 });
 
 test('converterNumero rejeita vazio e lixo', () => {
-    for (const texto of ['', '  ', 'abc', '1.2.3', '2,5kg']) {
+    for (const texto of ['', '  ', 'abc', '1.2.3', '2,5kg', 'Infinity', '1e3', '0x10']) {
         assert.equal(converterNumero(texto), null, `"${texto}" deveria ser rejeitado`);
     }
 });
