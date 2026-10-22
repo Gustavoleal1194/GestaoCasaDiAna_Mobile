@@ -4,6 +4,7 @@ import Botao from '../components/Botao';
 import CampoTexto from '../components/CampoTexto';
 import Card from '../components/Card';
 import MensagemErro from '../components/MensagemErro';
+import MensagemSucesso from '../components/MensagemSucesso';
 import TelaLista from '../components/TelaLista';
 import TextoDetalhe from '../components/TextoDetalhe';
 import TituloSecao from '../components/TituloSecao';
@@ -13,6 +14,7 @@ import { listarIngredientes } from '../services/ingredientesService';
 import { corrigirEstoque } from '../services/estoqueService';
 import { cores } from '../theme/cores';
 import { fontes } from '../theme/fontes';
+import { converterNumero } from '../utils/validacao';
 
 export default function EstoqueScreen() {
 
@@ -26,6 +28,7 @@ export default function EstoqueScreen() {
 
     const[carregando, setCarregando] = useState(false);
     const[erro, setErro] = useState('');
+    const[sucesso, setSucesso] = useState('');
 
     const[carregandoLista, setCarregandoLista] = useState(true);
     const[erroLista, setErroLista] = useState('');
@@ -67,10 +70,12 @@ export default function EstoqueScreen() {
     async function confirmarCorrecao() {
         if (!usuario || !ingredienteSelecionado) return;
 
-        const quantidadeNumero = Number(novaQuantidade.replace(',', '.'));
+        setSucesso('');
 
-        if (!novaQuantidade || quantidadeNumero < 0) {
-            setErro('Informe a nova quantidade em estoque!');
+        const quantidadeNumero = converterNumero(novaQuantidade);
+
+        if (quantidadeNumero === null || quantidadeNumero < 0) {
+            setErro('Informe uma quantidade válida (zero ou maior).');
             return;
         }
 
@@ -85,7 +90,9 @@ export default function EstoqueScreen() {
                 usuario.token
             );
 
+            const nomeCorrigido = ingredienteSelecionado.nome;
             cancelar();
+            setSucesso(`Estoque de ${nomeCorrigido} corrigido com sucesso!`);
             await carregarIngredientes();
         } catch (e) {
             setErro(e instanceof Error ? e.message : 'Erro ao corrigir estoque.');
@@ -143,6 +150,8 @@ export default function EstoqueScreen() {
                             </Text>
                         )
                     }
+
+                    <MensagemSucesso mensagem={sucesso} />
 
                     <TituloSecao espacado>INGREDIENTES</TituloSecao>
                 </>

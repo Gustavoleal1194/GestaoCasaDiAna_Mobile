@@ -3,6 +3,7 @@ import Botao from '../components/Botao';
 import CampoTexto from '../components/CampoTexto';
 import Card from '../components/Card';
 import MensagemErro from '../components/MensagemErro';
+import MensagemSucesso from '../components/MensagemSucesso';
 import Selecionador from '../components/Selecionador';
 import TelaLista from '../components/TelaLista';
 import TextoDetalhe from '../components/TextoDetalhe';
@@ -12,6 +13,7 @@ import { ProducaoDiaria } from '../models/ProducaoDiaria';
 import { Produto } from '../models/Produto';
 import { listarProdutos } from '../services/produtosService';
 import { listarProducao, registrarProducao } from '../services/producaoService';
+import { converterNumero, dataValida } from '../utils/validacao';
 
 function hojeISO() {
     return new Date().toISOString().slice(0, 10);
@@ -31,6 +33,7 @@ export default function ProducaoScreen() {
 
     const[carregando, setCarregando] = useState(false);
     const[erro, setErro] = useState('');
+    const[sucesso, setSucesso] = useState('');
 
     const[carregandoLista, setCarregandoLista] = useState(true);
     const[erroLista, setErroLista] = useState('');
@@ -62,10 +65,22 @@ export default function ProducaoScreen() {
     async function registrar() {
         if (!usuario) return;
 
-        const quantidadeNumero = Number(quantidadeProduzida.replace(',', '.'));
+        setSucesso('');
 
-        if (produtoId === '' || !quantidadeProduzida || quantidadeNumero <= 0) {
-            setErro('Produto e quantidade produzida são obrigatórios!');
+        const quantidadeNumero = converterNumero(quantidadeProduzida);
+
+        if (produtoId === '') {
+            setErro('Selecione um produto.');
+            return;
+        }
+
+        if (!dataValida(data)) {
+            setErro('Data inválida. Use o formato AAAA-MM-DD.');
+            return;
+        }
+
+        if (quantidadeNumero === null || quantidadeNumero <= 0) {
+            setErro('Informe uma quantidade válida maior que zero.');
             return;
         }
 
@@ -84,6 +99,7 @@ export default function ProducaoScreen() {
             setQuantidadeProduzida('');
             setObservacoes('');
             setData(hojeISO());
+            setSucesso('Produção registrada com sucesso!');
 
             await carregarDados();
         } catch (e) {
@@ -134,6 +150,7 @@ export default function ProducaoScreen() {
                     />
 
                     <MensagemErro mensagem={erro} />
+                    <MensagemSucesso mensagem={sucesso} />
 
                     <Botao
                         titulo={ carregando ? 'Registrando...' : 'Registrar' }

@@ -3,6 +3,7 @@ import Botao from '../components/Botao';
 import CampoTexto from '../components/CampoTexto';
 import Card from '../components/Card';
 import MensagemErro from '../components/MensagemErro';
+import MensagemSucesso from '../components/MensagemSucesso';
 import Selecionador from '../components/Selecionador';
 import TelaLista from '../components/TelaLista';
 import TextoDetalhe from '../components/TextoDetalhe';
@@ -12,6 +13,7 @@ import { Perda } from '../models/Perda';
 import { Produto } from '../models/Produto';
 import { listarProdutos } from '../services/produtosService';
 import { listarPerdas, registrarPerda } from '../services/perdasService';
+import { converterNumero, dataValida } from '../utils/validacao';
 
 function hojeISO() {
     return new Date().toISOString().slice(0, 10);
@@ -31,6 +33,7 @@ export default function PerdasScreen() {
 
     const[carregando, setCarregando] = useState(false);
     const[erro, setErro] = useState('');
+    const[sucesso, setSucesso] = useState('');
 
     const[carregandoLista, setCarregandoLista] = useState(true);
     const[erroLista, setErroLista] = useState('');
@@ -62,10 +65,27 @@ export default function PerdasScreen() {
     async function registrar() {
         if (!usuario) return;
 
-        const quantidadeNumero = Number(quantidade.replace(',', '.'));
+        setSucesso('');
 
-        if (produtoId === '' || !quantidade || quantidadeNumero <= 0 || justificativa.trim() === '') {
-            setErro('Produto, quantidade e justificativa são obrigatórios!');
+        const quantidadeNumero = converterNumero(quantidade);
+
+        if (produtoId === '') {
+            setErro('Selecione um produto.');
+            return;
+        }
+
+        if (!dataValida(data)) {
+            setErro('Data inválida. Use o formato AAAA-MM-DD.');
+            return;
+        }
+
+        if (quantidadeNumero === null || quantidadeNumero <= 0) {
+            setErro('Informe uma quantidade válida maior que zero.');
+            return;
+        }
+
+        if (justificativa.trim() === '') {
+            setErro('Informe a justificativa da perda.');
             return;
         }
 
@@ -84,6 +104,7 @@ export default function PerdasScreen() {
             setQuantidade('');
             setJustificativa('');
             setData(hojeISO());
+            setSucesso('Perda registrada com sucesso!');
 
             await carregarDados();
         } catch (e) {
@@ -134,6 +155,7 @@ export default function PerdasScreen() {
                     />
 
                     <MensagemErro mensagem={erro} />
+                    <MensagemSucesso mensagem={sucesso} />
 
                     <Botao
                         titulo={ carregando ? 'Registrando...' : 'Registrar' }
