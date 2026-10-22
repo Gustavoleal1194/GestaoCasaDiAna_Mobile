@@ -7,9 +7,9 @@
 - **Curso/Período:** Sistemas de Informação — 8º termo
 - **Disciplina:** Desenvolvimento Mobile
 - **Professor(a):** Lenon Fachiano
-- **Ferramenta de IA utilizada:** Claude Code (Anthropic), modelo Claude Sonnet 5
+- **Ferramenta de IA utilizada:** Claude Code (Anthropic), modelos Claude Sonnet 5 e Claude Opus 5.5
 - **Repositório:** https://github.com/Gustavoleal1194/GestaoCasaDiAna_Mobile
-- **Data:** 2026-09-20
+- **Data:** 2026-10-22
 
 ---
 
@@ -37,7 +37,15 @@ Este termo declara **apenas os elementos técnicos e funcionais que vão além d
 
 7. **Configuração de dependências e do ambiente** — integração de bibliotecas não presentes no projeto de referência (React Navigation, AsyncStorage, `expo-linear-gradient`, Google Fonts) e ajustes de configuração do Expo (`app.json`) específicos para viabilizar essas funcionalidades.
 
-8. **Documentação do projeto** — redação do `README.md` do repositório.
+8. **Documentação do projeto** — redação do `README.md` do repositório, incluindo as seções dos Checkpoints 02 e 03 e as instruções de execução do app, da WebAPI e do banco de dados.
+
+9. **Estados de carregamento e erro (Checkpoint 02)** — componentes `Carregando` e `ErroCarregamento`, pull-to-refresh e mensagens por status HTTP em `services/api.ts`.
+
+10. **Navegação em pilha com parâmetros (Checkpoint 03)** — `CadastroNavigator` (native stack aninhado no drawer), tipagem das rotas em `navigation/tipos.ts` e a divisão do Cadastro em lista, detalhe e formulário, com `id`/`tipo` passados como parâmetros de rota e retorno com `goBack`/`popTo`.
+
+11. **Feedback e validação (Checkpoint 03)** — componente `MensagemSucesso`, funções `converterNumero` e `dataValida` (`utils/validacao.ts`) com testes automatizados, e mensagens de validação por campo.
+
+12. **Tratamento de sessão expirada (Checkpoint 03)** — encerramento automático da sessão ao receber 401 e tela de restauração da sessão ao abrir o app.
 
 ---
 

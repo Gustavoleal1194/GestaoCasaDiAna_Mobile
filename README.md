@@ -81,7 +81,7 @@ Todas as funcionalidades listadas acima: login com 2FA, sessão persistente, mó
 | Perdas | `screens/PerdasScreen.tsx` | Registrar e listar perdas (tela inicial após o login) |
 | Produção Diária | `screens/ProducaoScreen.tsx` | Registrar e listar produção |
 | Correção de Estoque | `screens/EstoqueScreen.tsx` | Listar ingredientes e corrigir o estoque |
-| Cadastro | `screens/CadastroScreen.tsx` | CRUD de produtos e ingredientes (alternância Produto/Ingrediente) |
+| Cadastro | `screens/CadastroScreen.tsx` | CRUD de produtos e ingredientes (alternância Produto/Ingrediente) — *dividido em três telas no Checkpoint 03* |
 
 ### Fluxo de navegação
 ```
@@ -103,7 +103,7 @@ App.tsx
 
 ### Transferência de dados entre as telas
 - **Contexto global (`context/AuthContext.tsx`)**: o usuário logado (`token`, `nome`, `papel`) é compartilhado com todas as telas via React Context (`useAuth()`). O token é repassado aos services em cada requisição, e o nome/papel aparecem no menu lateral.
-- **Sem parâmetros de rota**: cada tela é independente e busca na API os próprios dados ao ser montada, o que garante que sempre exiba a informação atual do servidor.
+- **Sem parâmetros de rota** *(situação do Checkpoint 02 — no Checkpoint 03 o Cadastro passou a usar parâmetros de rota, ver [Navegação atualizada](#-navegação-atualizada))*: cada tela é independente e busca na API os próprios dados ao ser montada, o que garante que sempre exiba a informação atual do servidor.
 - **Dentro de cada tela**: os dados passam da tela para os componentes visuais por **props** (`TelaLista`, `Card`, `Selecionador`, `CampoTexto`...).
 
 ---
@@ -211,6 +211,94 @@ O `chamarApi` converte a resposta com `resposta.json()`, verifica `sucesso` e de
 
 ---
 
+# 🏁 Checkpoint 03 — Entrega final
+
+## 📈 Evolução do projeto
+
+### O que existia no Checkpoint 02
+Todas as funcionalidades do Checkpoint 01, mais indicação de carregamento, tela de erro com "Tentar novamente", pull-to-refresh e tratamento de respostas sem JSON. Faltavam: transferência de parâmetros entre telas e botão de voltar, confirmação visual das ações concluídas, validação de números/datas digitados de forma inválida e tratamento da sessão expirada.
+
+### O que foi implementado desde a entrega anterior
+- **Navegação em pilha no Cadastro** — a tela única de Cadastro virou três telas (lista → detalhe → formulário), com o `id` e o `tipo` do item passados como **parâmetros de rota** e botão **voltar** no topo (e no botão voltar do Android).
+- **Tela de detalhes** do produto/ingrediente, com todos os campos retornados por `GET /produtos/{id}` e `GET /ingredientes/{id}` e as ações Editar e Excluir.
+- **Botão "Novo produto"/"Novo ingrediente"** que abre o mesmo formulário usado na edição.
+- **Mensagens de sucesso** (`components/MensagemSucesso.tsx`) após registrar, salvar, corrigir e excluir; somem sozinhas após 4 s.
+- **Validação de números e datas** (`utils/validacao.ts`) com mensagens específicas por campo, coberta por testes automatizados (`npm test`).
+- **Sessão expirada (401)**: o app encerra a sessão, volta para o Login e exibe "Sua sessão expirou. Faça login novamente.".
+- **Restauração da sessão** sem "piscar" a tela de Login ao abrir o app.
+
+### Arquivos criados e alterados
+| Arquivo | Alteração |
+|---|---|
+| `navigation/CadastroNavigator.tsx` | **Novo.** Stack nativo (`@react-navigation/native-stack`) aninhado na rota Cadastro do drawer |
+| `navigation/tipos.ts` | **Novo.** Tipagem das rotas e de seus parâmetros (`CadastroStackParamList`) |
+| `screens/CadastroListaScreen.tsx` | **Novo.** Lista de produtos/ingredientes, botão "Novo", recebe a mensagem de sucesso por parâmetro |
+| `screens/CadastroDetalheScreen.tsx` | **Novo.** Detalhes do item recebido por parâmetro; Editar e Excluir |
+| `screens/CadastroFormularioScreen.tsx` | **Novo.** Formulário único de criação/edição (com `id` = editar, sem `id` = criar) |
+| `screens/CadastroScreen.tsx` | **Removido** (substituído pelas três telas acima) |
+| `components/MensagemSucesso.tsx` | **Novo.** Feedback visual de ação concluída |
+| `utils/validacao.ts` / `utils/validacao.test.mts` | **Novos.** `converterNumero` e `dataValida`, com testes |
+| `screens/PerdasScreen.tsx`, `ProducaoScreen.tsx`, `EstoqueScreen.tsx` | Mensagem de sucesso e validação por campo |
+| `services/api.ts` | `definirAoSessaoExpirar`: avisa o app quando uma chamada autenticada recebe 401 |
+| `context/AuthContext.tsx` | Encerra a sessão no 401 e expõe `restaurando` |
+| `App.tsx` | Mostra "Restaurando sessão..." enquanto lê o AsyncStorage |
+| `navigation/AppNavigator.tsx` | Rota Cadastro aponta para o `CadastroNavigator` |
+
+## 🧭 Navegação atualizada
+
+```
+App.tsx
+ └─ restaurando sessão? → "Restaurando sessão..."
+ └─ usuário logado?
+     ├─ não → LoginScreen (e-mail/senha → código 2FA, se exigido)
+     └─ sim → AppNavigator (Drawer / menu lateral)
+               ├─ Perdas (inicial)
+               ├─ Produção Diária
+               ├─ Correção de Estoque
+               ├─ Cadastro → CadastroNavigator (Stack)
+               │     ├─ CadastroLista ──toque no item──▶ CadastroDetalhe { tipo, id }
+               │     │      └─ "Novo …" ─────────────▶ CadastroFormulario { tipo }
+               │     └─ CadastroDetalhe ──"Editar"───▶ CadastroFormulario { tipo, id }
+               └─ Sair → limpa a sessão → LoginScreen
+```
+
+### Parâmetros de rota
+| Rota | Parâmetros | Quem envia | Uso |
+|---|---|---|---|
+| `CadastroDetalhe` | `tipo`, `id` | Lista (toque no card) | Busca o item na API pelo `id` |
+| `CadastroDetalhe` | `mensagem` | Formulário (após editar) | Exibe "Alterações salvas com sucesso!" |
+| `CadastroFormulario` | `tipo`, `id?` | Lista ("Novo") / Detalhe ("Editar") | Sem `id` cria; com `id` carrega e atualiza |
+| `CadastroLista` | `mensagem` | Formulário (após criar) / Detalhe (após excluir) | Exibe a confirmação da ação |
+
+### Retorno às telas anteriores
+- Seta **voltar** no cabeçalho e botão voltar do Android desempilham Formulário → Detalhe → Lista.
+- Botões **Cancelar** (formulário) e **Voltar** (telas de erro) chamam `navigation.goBack()`.
+- Após salvar ou excluir, `navigation.popTo(...)` volta para a tela certa já levando a mensagem de sucesso; a tela que recebe recarrega os dados ao ganhar foco (`useFocusEffect`).
+- No topo da lista do Cadastro, o ícone de menu abre o drawer para ir às outras telas.
+
+## ✅ Feedback e validação
+
+| Ação | Mensagem de sucesso |
+|---|---|
+| Registrar perda / produção | "Perda registrada com sucesso!" / "Produção registrada com sucesso!" |
+| Corrigir estoque | "Estoque de *ingrediente* corrigido com sucesso!" |
+| Cadastrar produto/ingrediente | "Produto "*nome*" cadastrado com sucesso!" |
+| Editar | "Alterações salvas com sucesso!" |
+| Excluir | "Produto "*nome*" excluído com sucesso!" |
+
+| Validação | Mensagem |
+|---|---|
+| Produto não selecionado | "Selecione um produto." |
+| Data fora de AAAA-MM-DD ou inexistente (ex.: 2026-02-30) | "Data inválida. Use o formato AAAA-MM-DD." |
+| Quantidade vazia, não numérica ou ≤ 0 | "Informe uma quantidade válida maior que zero." |
+| Preço de venda inválido | "Informe um preço de venda válido maior que zero." |
+| Estoque máximo menor que o mínimo | "O estoque máximo deve ser um número maior ou igual ao mínimo." |
+| Sessão expirada (401) | "Sua sessão expirou. Faça login novamente." (na tela de Login) |
+
+Os erros de validação do servidor (campo `erros` da API) continuam sendo exibidos como antes.
+
+---
+
 ## 🔗 Repositórios
 
 - **App mobile (este projeto):** https://github.com/Gustavoleal1194/GestaoCasaDiAna_Mobile
@@ -269,7 +357,7 @@ O `chamarApi` converte a resposta com `resposta.json()`, verifica `sucesso` e de
 |---|---|
 | Expo SDK 57 / React Native 0.86 | Framework mobile |
 | TypeScript | Tipagem estática |
-| React Navigation (Drawer) | Navegação por menu lateral |
+| React Navigation (Drawer + Native Stack) | Menu lateral e navegação em pilha com parâmetros |
 | AsyncStorage | Persistência da sessão no dispositivo |
 | expo-linear-gradient | Botões com gradiente (identidade visual) |
 | @expo-google-fonts (Sora, DM Sans) | Tipografia alinhada ao sistema web |
@@ -278,9 +366,16 @@ O `chamarApi` converte a resposta com `resposta.json()`, verifica `sucesso` e de
 
 ## 🚀 Como executar
 
+O app consome por padrão a **API já publicada** em `https://casadiana-api.onrender.com/api` (backend .NET 8 + PostgreSQL 15 hospedados no Render). Para testar o app **não é preciso** rodar a API nem o banco localmente; as seções 2 e 3 explicam como fazê-lo, se desejado.
+
+### 1. Aplicação mobile
+
+Pré-requisitos: Node.js 22.13+ e o app **Expo Go** (SDK 57) no celular.
+
 ```bash
 npm install
-npm start
+npm start      # inicia o Expo e exibe o QR code
+npm test       # testes automatizados das validações
 ```
 
 No **iPhone físico**, o Expo Go (SDK 57) exige que o app e o Expo CLI estejam logados na **mesma conta Expo**. Antes de iniciar, faça login no CLI com a mesma conta usada no Expo Go:
@@ -294,4 +389,41 @@ No Android (dispositivo ou emulador) esse login não é necessário.
 
 Escaneie o QR code exibido no terminal com o app **Expo Go** (Android/iOS), estando o celular na mesma rede Wi-Fi do computador. Se preferir, no Expo Go use **"Enter URL manually"** e informe `exp://<IP-do-computador>:8081`.
 
-O app já aponta para a API em produção (`https://casadiana-api.onrender.com/api`) — não é necessário rodar o backend localmente para testar.
+O app já aponta para a API em produção (`https://casadiana-api.onrender.com/api`) — não é necessário rodar o backend localmente para testar. A primeira requisição após um tempo parado pode levar alguns segundos (cold start do Render); o app exibe uma mensagem e o botão "Tentar novamente".
+
+> O modo web (`npm run web`) não consegue chamar a API por bloqueio de **CORS**; use sempre o Expo Go.
+
+### 2. WebAPI
+
+Código-fonte: [Projeto_Gestao_Casa_Di_Ana](https://github.com/Gustavoleal1194/Projeto_Gestao_Casa_Di_Ana) (ASP.NET Core 8, Clean Architecture). Pré-requisitos: .NET SDK 8.0 e PostgreSQL 15 (ou Docker).
+
+**Opção A — Docker Compose (sobe API, banco e frontend web):**
+```bash
+git clone https://github.com/Gustavoleal1194/Projeto_Gestao_Casa_Di_Ana.git
+cd Projeto_Gestao_Casa_Di_Ana/CasaDiAna
+cp .env.example .env   # preencha POSTGRES_PASSWORD e JWT_CHAVE (mín. 32 caracteres)
+docker-compose up --build
+# API/Swagger: http://localhost:8080/swagger
+```
+
+**Opção B — Execução local:**
+```bash
+cd Projeto_Gestao_Casa_Di_Ana/CasaDiAna
+# variáveis de ambiente (ou appsettings.Development.json):
+#   ConnectionStrings__Default=Host=localhost;Port=5432;Database=casadiana;Username=postgres;Password=sua_senha
+#   Jwt__Chave=chave-secreta-com-no-minimo-32-caracteres
+dotnet run --project src/CasaDiAna.API
+# API: http://localhost:5130
+```
+
+Para o app usar a API local, altere `URL_BASE` em `services/api.ts` para `http://<IP-do-computador>:<porta>/api` (o celular não enxerga `localhost` do computador; ambos devem estar na mesma rede).
+
+### 3. Banco de dados
+
+- **SGBD:** PostgreSQL 15, acessado pela API via Entity Framework Core 8 (Npgsql). O app mobile **não** acessa o banco diretamente — tudo passa pela API.
+- **Criação do schema:** as **migrations são aplicadas automaticamente** quando a API inicia; basta criar o banco vazio (`CREATE DATABASE casadiana;`) e apontar a connection string. No Docker Compose o container do PostgreSQL já é criado.
+- **Usuário inicial:** com o banco vazio, a API cria `admin@casadiana.com` / `Admin@123` (papel Admin), que pode ser usado no login do app.
+
+### 4. Demonstração no computador
+
+A apresentação é feita com o app rodando no **Expo Go** do celular. Para exibir a tela do celular no computador, espelhe o dispositivo (no Android, por exemplo, com [`scrcpy`](https://github.com/Genymobile/scrcpy) via USB).
