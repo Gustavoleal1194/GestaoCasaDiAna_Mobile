@@ -4,6 +4,12 @@ export const URL_BASE = 'https://casadiana-api.onrender.com/api';
 
 const TEMPO_LIMITE_MS = 30000;
 
+let aoSessaoExpirar: (() => void) | null = null;
+
+export function definirAoSessaoExpirar(callback: (() => void) | null) {
+    aoSessaoExpirar = callback;
+}
+
 export async function chamarApi<T>(
     caminho: string,
     opcoes: RequestInit = {},
@@ -44,6 +50,10 @@ export async function chamarApi<T>(
         json = await resposta.json();
     } catch {
         json = null;
+    }
+
+    if (resposta.status === 401 && token && aoSessaoExpirar) {
+        aoSessaoExpirar();
     }
 
     if (!resposta.ok || !json?.sucesso) {

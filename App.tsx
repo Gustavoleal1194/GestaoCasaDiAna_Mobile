@@ -13,13 +13,22 @@ import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Carregando from './components/Carregando';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AppNavigator from './navigation/AppNavigator';
 import LoginScreen from './screens/LoginScreen';
 import { cores } from './theme/cores';
 
 function Raiz() {
-    const { usuario } = useAuth();
+    const { usuario, restaurando } = useAuth();
+
+    if (restaurando) {
+        return (
+            <View style={styles.carregando}>
+                <Carregando mensagem='Restaurando sessão...' />
+            </View>
+        );
+    }
 
     return usuario ? <AppNavigator /> : <LoginScreen />;
 }

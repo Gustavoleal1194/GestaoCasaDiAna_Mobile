@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UsuarioLogado } from '../models/Usuario';
+import { definirAoSessaoExpirar } from '../services/api';
 import { login as loginService, verificarOtp as verificarOtpService } from '../services/authService';
 
 const CHAVE_ARMAZENAMENTO = '@casadiana:usuario';
@@ -8,6 +9,7 @@ const CHAVE_ARMAZENAMENTO = '@casadiana:usuario';
 type AuthContextType = {
     usuario: UsuarioLogado | null,
     aguardando2Fa: boolean,
+    restaurando: boolean,
     carregando: boolean,
     erro: string,
     entrar: (email: string, senha: string) => Promise<void>,
@@ -22,15 +24,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const [usuario, setUsuario] = useState<UsuarioLogado | null>(null);
     const [tokenTemporario, setTokenTemporario] = useState<string | null>(null);
+    const [restaurando, setRestaurando] = useState(true);
     const [carregando, setCarregando] = useState(false);
     const [erro, setErro] = useState('');
 
+    const usuarioAtual = useRef<UsuarioLogado | null>(null);
+    usuarioAtual.current = usuario;
+
     useEffect(() => {
-        AsyncStorage.getItem(CHAVE_ARMAZENAMENTO).then((valor) => {
-            if (valor) {
-                setUsuario(JSON.parse(valor));
-            }
+        AsyncStorage.getItem(CHAVE_ARMAZENAMENTO)
+            .then((valor) => {
+                if (valor) {
+                    setUsuario(JSON.parse(valor));
+                }
+            })
+            .catch(() => {
+                AsyncStorage.removeItem(CHAVE_ARMAZENAMENTO);
+            })
+            .finally(() => setRestaurando(false));
+    }, []);
+
+    useEffect(() => {
+        definirAoSessaoExpirar(() => {
+            if (!usuarioAtual.current) return;
+
+            AsyncStorage.removeItem(CHAVE_ARMAZENAMENTO);
+            setTokenTemporario(null);
+            setUsuario(null);
+            setErro('Sua sessão expirou. Faça login novamente.');
         });
+
+        return () => definirAoSessaoExpirar(null);
     }, []);
 
     async function salvarSessao(usuarioLogado: UsuarioLogado) {
@@ -94,6 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         <AuthContext.Provider value={{
             usuario,
             aguardando2Fa: tokenTemporario !== null,
+            restaurando,
             carregando,
             erro,
             entrar,
