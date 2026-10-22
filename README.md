@@ -297,6 +297,34 @@ App.tsx
 
 Os erros de validação do servidor (campo `erros` da API) continuam sendo exibidos como antes.
 
+## 🧪 Testes e verificação
+
+Verificações automatizadas executadas antes da entrega (todas aprovadas):
+
+| Verificação | Comando | Resultado |
+|---|---|---|
+| Testes unitários das validações | `npm test` | 4/4 aprovados |
+| Checagem de tipos (TypeScript strict) | `npx tsc --noEmit` | Sem erros |
+| Saúde do projeto Expo (dependências e config do SDK 57) | `npx expo-doctor` | 21/21 checagens aprovadas |
+| Geração do bundle Android | `npx expo export --platform android` | Bundle gerado sem erros |
+| WebAPI em produção acessível | `GET /api/produtos` sem token | `401` (rota protegida respondendo) |
+| Login com credenciais inválidas | `POST /api/auth/login` | `401` com `"erros": ["Credenciais inválidas."]` |
+
+Casos cobertos pelos testes unitários (`utils/validacao.test.mts`):
+
+- `converterNumero` aceita `2,5`, `2.5` e ` 10 `, e rejeita vazio, `abc`, `1.2.3`, `2,5kg`, `Infinity`, `1e3` e `0x10`.
+- `dataValida` aceita `2026-10-22` e `2024-02-29` (ano bissexto), e rejeita `22/10/2026`, `2026-2-1`, `2026-02-30` e `2025-02-29`.
+
+Roteiro de teste manual no **Expo Go**:
+
+1. Login (com 2FA, se habilitado) e reabertura do app: a sessão é restaurada sem piscar a tela de Login.
+2. Cadastro → tocar em um item → Detalhes → Editar → Salvar: volta aos Detalhes com "Alterações salvas com sucesso!".
+3. Cadastro → Novo produto → Salvar: volta à lista com a mensagem de cadastro.
+4. Detalhes → Excluir → confirmar: volta à lista com a mensagem de exclusão.
+5. Voltar pela seta do cabeçalho e pelo botão voltar do Android em cada tela da pilha.
+6. Perdas com quantidade `abc` e com data `2026-02-30`: mensagens de validação específicas.
+7. Modo avião ao abrir uma lista: mensagem de falha de conexão com botão "Tentar novamente".
+
 ---
 
 ## 🔗 Repositórios
