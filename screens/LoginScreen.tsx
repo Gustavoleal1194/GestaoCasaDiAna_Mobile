@@ -13,6 +13,7 @@ import MensagemErro from '../components/MensagemErro';
 import { useAuth } from '../context/AuthContext';
 import { cores } from '../theme/cores';
 import { fontes } from '../theme/fontes';
+import { emailValido } from '../utils/validacao';
 
 export default function LoginScreen() {
 
@@ -21,6 +22,37 @@ export default function LoginScreen() {
     const[email, setEmail] = useState('');
     const[senha, setSenha] = useState('');
     const[codigo, setCodigo] = useState('');
+    const[erroValidacao, setErroValidacao] = useState('');
+
+    function validarEEntrar() {
+        if (email.trim() === '') {
+            setErroValidacao('Informe o e-mail.');
+            return;
+        }
+
+        if (!emailValido(email)) {
+            setErroValidacao('Informe um e-mail válido.');
+            return;
+        }
+
+        if (senha === '') {
+            setErroValidacao('Informe a senha.');
+            return;
+        }
+
+        setErroValidacao('');
+        entrar(email.trim(), senha);
+    }
+
+    function validarEConfirmar() {
+        if (!/^\d{6}$/.test(codigo)) {
+            setErroValidacao('Informe o código de 6 dígitos.');
+            return;
+        }
+
+        setErroValidacao('');
+        confirmarCodigo(codigo);
+    }
 
     return (
         <KeyboardAvoidingView
@@ -50,7 +82,7 @@ export default function LoginScreen() {
                                     onChangeText={setCodigo}
                                 />
 
-                                <MensagemErro mensagem={erro} />
+                                <MensagemErro mensagem={erroValidacao || erro} />
 
                                 {
                                     carregando ? (
@@ -59,13 +91,14 @@ export default function LoginScreen() {
                                         <View>
                                             <Botao
                                                 titulo='Confirmar'
-                                                onPress={() => confirmarCodigo(codigo)}
+                                                onPress={validarEConfirmar}
                                             />
                                             <Botao
                                                 titulo='Voltar'
                                                 variante='secundario'
                                                 onPress={() => {
                                                     setCodigo('');
+                                                    setErroValidacao('');
                                                     cancelar2Fa();
                                                 }}
                                             />
@@ -92,7 +125,7 @@ export default function LoginScreen() {
                                     onChangeText={setSenha}
                                 />
 
-                                <MensagemErro mensagem={erro} />
+                                <MensagemErro mensagem={erroValidacao || erro} />
 
                                 {
                                     carregando ? (
@@ -100,7 +133,7 @@ export default function LoginScreen() {
                                     ) : (
                                         <Botao
                                             titulo='Entrar'
-                                            onPress={() => entrar(email, senha)}
+                                            onPress={validarEEntrar}
                                         />
                                     )
                                 }

@@ -13,11 +13,7 @@ import { ProducaoDiaria } from '../models/ProducaoDiaria';
 import { Produto } from '../models/Produto';
 import { listarProdutos } from '../services/produtosService';
 import { listarProducao, registrarProducao } from '../services/producaoService';
-import { converterNumero, dataValida } from '../utils/validacao';
-
-function hojeISO() {
-    return new Date().toISOString().slice(0, 10);
-}
+import { converterNumero, dataLocalISO, dataValida } from '../utils/validacao';
 
 export default function ProducaoScreen() {
 
@@ -27,7 +23,7 @@ export default function ProducaoScreen() {
     const[producoes, setProducoes] = useState<ProducaoDiaria[]>([]);
 
     const[produtoId, setProdutoId] = useState('');
-    const[data, setData] = useState(hojeISO());
+    const[data, setData] = useState(dataLocalISO());
     const[quantidadeProduzida, setQuantidadeProduzida] = useState('');
     const[observacoes, setObservacoes] = useState('');
 
@@ -98,7 +94,7 @@ export default function ProducaoScreen() {
             setProdutoId('');
             setQuantidadeProduzida('');
             setObservacoes('');
-            setData(hojeISO());
+            setData(dataLocalISO());
             setSucesso('Produção registrada com sucesso!');
 
             await carregarDados();

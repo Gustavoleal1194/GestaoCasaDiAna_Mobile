@@ -13,11 +13,7 @@ import { Perda } from '../models/Perda';
 import { Produto } from '../models/Produto';
 import { listarProdutos } from '../services/produtosService';
 import { listarPerdas, registrarPerda } from '../services/perdasService';
-import { converterNumero, dataValida } from '../utils/validacao';
-
-function hojeISO() {
-    return new Date().toISOString().slice(0, 10);
-}
+import { converterNumero, dataLocalISO, dataValida } from '../utils/validacao';
 
 export default function PerdasScreen() {
 
@@ -27,7 +23,7 @@ export default function PerdasScreen() {
     const[perdas, setPerdas] = useState<Perda[]>([]);
 
     const[produtoId, setProdutoId] = useState('');
-    const[data, setData] = useState(hojeISO());
+    const[data, setData] = useState(dataLocalISO());
     const[quantidade, setQuantidade] = useState('');
     const[justificativa, setJustificativa] = useState('');
 
@@ -103,7 +99,7 @@ export default function PerdasScreen() {
             setProdutoId('');
             setQuantidade('');
             setJustificativa('');
-            setData(hojeISO());
+            setData(dataLocalISO());
             setSucesso('Perda registrada com sucesso!');
 
             await carregarDados();
