@@ -305,7 +305,7 @@ Verificações automatizadas executadas antes da entrega (todas aprovadas):
 |---|---|---|
 | Testes unitários das validações | `npm test` | 4/4 aprovados |
 | Checagem de tipos (TypeScript strict) | `npx tsc --noEmit` | Sem erros |
-| Saúde do projeto Expo (dependências e config do SDK 57) | `npx expo-doctor` | 21/21 checagens aprovadas |
+| Saúde do projeto Expo (dependências e config do SDK 58) | `npx expo-doctor` | 20/20 checagens aprovadas |
 | Geração do bundle Android | `npx expo export --platform android` | Bundle gerado sem erros |
 | WebAPI em produção acessível | `GET /api/produtos` sem token | `401` (rota protegida respondendo) |
 | Login com credenciais inválidas | `POST /api/auth/login` | `401` com `"erros": ["Credenciais inválidas."]` |
@@ -383,7 +383,7 @@ Roteiro de teste manual no **Expo Go**:
 
 | Tecnologia | Uso |
 |---|---|
-| Expo SDK 57 / React Native 0.86 | Framework mobile |
+| Expo SDK 58 / React Native 0.88 | Framework mobile |
 | TypeScript | Tipagem estática |
 | React Navigation (Drawer + Native Stack) | Menu lateral e navegação em pilha com parâmetros |
 | AsyncStorage | Persistência da sessão no dispositivo |
@@ -398,7 +398,7 @@ O app consome por padrão a **API já publicada** em `https://casadiana-api.onre
 
 ### 1. Aplicação mobile
 
-Pré-requisitos: Node.js 22.18+ (os testes usam o suporte nativo do Node a TypeScript) e o app **Expo Go** (SDK 57) no celular.
+Pré-requisitos: Node.js 22.18+ (os testes usam o suporte nativo do Node a TypeScript) e o app **Expo Go** (SDK 58) no celular.
 
 ```bash
 npm install
@@ -406,7 +406,7 @@ npm start      # inicia o Expo e exibe o QR code
 npm test       # testes automatizados das validações
 ```
 
-No **iPhone físico**, o Expo Go (SDK 57) exige que o app e o Expo CLI estejam logados na **mesma conta Expo**. Antes de iniciar, faça login no CLI com a mesma conta usada no Expo Go:
+No **iPhone físico**, o Expo Go (SDK 58) exige que o app e o Expo CLI estejam logados na **mesma conta Expo**. Antes de iniciar, faça login no CLI com a mesma conta usada no Expo Go:
 
 ```bash
 npx expo login
